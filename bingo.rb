@@ -1,0 +1,64 @@
+#!/usr/bin/env ruby -w
+
+require "bundler/inline"
+
+gemfile(true) do
+  source "https://rubygems.org"
+  gem "rmagick"
+end
+
+require "rmagick"
+require "fileutils"
+
+NUMBER_OF_CARDS = (ARGV[0] || 50).to_i
+
+MARGIN_X  = 167
+MARGIN_Y  = 938
+PADDING_X = 47
+PADDING_Y = 45
+HEIGHT    = 617
+WIDTH     = 670
+
+puts "Removing previous cards."
+FileUtils.rm_r(Dir.glob("./cards/*.jpg"))
+FileUtils.rm_r(Dir.glob("./prints/*.jpg"))
+
+NUMBER_OF_CARDS.times do |idx|
+  grid    = Magick::Image.read("grid.jpg")[0]
+  words   = Dir.glob("./words/*.jpg")
+  figures = Dir.glob("./figures/*.jpg")
+  orders  = (0..4).to_a.shuffle
+
+  filename = "card_#{idx.to_s.rjust(3, '0')}.jpg"
+  puts "Creating file #{filename}."
+
+  5.times do |i|
+    figure_col = orders.pop
+
+    5.times do |j|
+      y = MARGIN_Y + (i * HEIGHT) + (i * PADDING_Y)
+      x = MARGIN_X + (j * WIDTH)  + (j * PADDING_X)
+
+      path = if j == figure_col
+              figures.delete_at(rand(figures.size))
+            else
+              words.delete_at(rand(words.size))
+            end
+
+      image = Magick::Image.read(path)[0]
+      grid.composite!(image, x, y, Magick::OverCompositeOp)
+    end
+  end
+
+  grid.write("./cards/#{filename}")
+end
+
+NUMBER_OF_CARDS.times do |idx|
+  next if idx.odd?
+  source1 = "card_#{idx.to_s.rjust(3, '0')}.jpg"
+  source2 = "card_#{(idx + 1).to_s.rjust(3, '0')}.jpg"
+  final   = "print_#{idx.to_s.rjust(3, '0')}.jpg"
+
+  puts "Joining #{source1} and #{source2} into #{final}."
+  `convert +append ./cards/#{source1} ./cards/#{source2} ./prints/#{final}`
+end
