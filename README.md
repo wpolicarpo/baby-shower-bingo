@@ -5,9 +5,20 @@ As time passes, our friends are raising their families and we need to help them 
 ## How to use
 
 ```bash
-$ bingo $NUMBER_OF_CARDS
+$ NUMBER_OF_CARDS=50 LANGUAGE=pt bingo
 ```
 
-Where `$NUMBER_OF_CARDS` is the number of cards you want to generate.
+### `NUMBER_OF_CARDS` (default: `50`)
 
-`bingo 50` will generate `25` sheets with `2` cards side by side (landscape mode) each.
+The number of cards you want to generate.
+
+`NUMBER_OF_CARDS=50 bingo` will generate `25` sheets with `2` cards side by side (landscape mode) each.
+
+### `LANGUAGE` (default: `pt`)
+
+The language used to generate the cards.
+
+Language available:
+
+- `pt` - Portuguese
+- `en_pt` - English with Portuguese translations

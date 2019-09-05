@@ -10,7 +10,8 @@ end
 require "rmagick"
 require "fileutils"
 
-NUMBER_OF_CARDS = (ARGV[0] || 50).to_i
+NUMBER_OF_CARDS = ENV.fetch("NUMBER_OF_CARDS", 50).to_i
+LANGUAGE        = ENV.fetch("LANGUAGE", "pt").downcase
 
 MARGIN_X  = 167
 MARGIN_Y  = 938
@@ -25,11 +26,11 @@ FileUtils.rm_r(Dir.glob("./prints/*.jpg"))
 
 NUMBER_OF_CARDS.times do |idx|
   grid    = Magick::Image.read("grid.jpg")[0]
-  words   = Dir.glob("./words/*.jpg")
+  words   = Dir.glob("./words/#{LANGUAGE}/*.jpg")
   figures = Dir.glob("./figures/*.jpg")
   orders  = (0..4).to_a.shuffle
 
-  filename = "card_#{idx.to_s.rjust(3, '0')}.jpg"
+  filename = "card_#{idx.to_s.rjust(3, "0")}.jpg"
   puts "Creating file #{filename}."
 
   5.times do |i|
@@ -55,9 +56,9 @@ end
 
 NUMBER_OF_CARDS.times do |idx|
   next if idx.odd?
-  source1 = "card_#{idx.to_s.rjust(3, '0')}.jpg"
-  source2 = "card_#{(idx + 1).to_s.rjust(3, '0')}.jpg"
-  final   = "print_#{idx.to_s.rjust(3, '0')}.jpg"
+  source1 = "card_#{idx.to_s.rjust(3, "0")}.jpg"
+  source2 = "card_#{(idx + 1).to_s.rjust(3, "0")}.jpg"
+  final   = "print_#{idx.to_s.rjust(3, "0")}.jpg"
 
   puts "Joining #{source1} and #{source2} into #{final}."
   `convert +append ./cards/#{source1} ./cards/#{source2} ./prints/#{final}`
