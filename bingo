@@ -28,7 +28,7 @@ NUMBER_OF_CARDS.times do |idx|
   grid    = Magick::Image.read("grid.jpg")[0]
   words   = Dir.glob("./words/#{LANGUAGE}/*.jpg")
   figures = Dir.glob("./figures/*.jpg")
-  orders  = (0..4).to_a.shuffle
+  orders  = Array.new(figures.size) { |i| i }.shuffle
 
   filename = "card_#{idx.to_s.rjust(3, "0")}.jpg"
   puts "Creating file #{filename}."
